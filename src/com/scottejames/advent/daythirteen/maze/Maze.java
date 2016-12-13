@@ -1,7 +1,7 @@
 package com.scottejames.advent.daythirteen.maze;
 
-import java.awt.Point;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 public class Maze {
@@ -46,38 +46,84 @@ public class Maze {
 		return false;
 	}
 
-	public static Path getPathBFS(int x, int y) {
+	public static List<Path> getDistanceBFS(int x, int y) {
+		List<Path> results = new LinkedList<Path>();
+
 		queue.add(new Path(x, y, null));
+		int fiftyCount = 0;
 		while (!queue.isEmpty()) {
 			System.out.println("queue depth " + queue.size());
 			Path p = queue.remove();
-			if ((p.x == DEST_X) && (p.y == DEST_Y)) {
-				System.out.println("Reached end");
-				return p;
-			}
-			if (isFree(p.x + 1, p.y)) {
-				maze[p.x][p.y] = 'X';
-				Path next = new Path(p.x + 1, p.y, p);
-				queue.add(next);
-			}
-			if (isFree(p.x - 1, p.y)) {
-				maze[p.x][p.y] = 'X';
-				Path next = new Path(p.x - 1, p.y, p);
-				queue.add(next);
-			}
 
-			if (isFree(p.x, p.y + 1)) {
-				maze[p.x][p.y] = 'X';
-				Path next = new Path(p.x, p.y + 1, p);
-				queue.add(next);
-			}
+			if (p.distance == 50)
+				results.add(p);
+			else {
+				if (isFree(p.x + 1, p.y)) {
+					maze[p.x][p.y] = 'X';
+					Path next = new Path(p.x + 1, p.y, p);
+					queue.add(next);
+				}
+				if (isFree(p.x - 1, p.y)) {
+					maze[p.x][p.y] = 'X';
+					Path next = new Path(p.x - 1, p.y, p);
+					queue.add(next);
+				}
 
-			if (isFree(p.x, p.y - 1)) {
-				maze[p.x][p.y] = 'X';
-				Path next = new Path(p.x, p.y - 1, p);
-				queue.add(next);
+				if (isFree(p.x, p.y + 1)) {
+					maze[p.x][p.y] = 'X';
+					Path next = new Path(p.x, p.y + 1, p);
+					queue.add(next);
+				}
+
+				if (isFree(p.x, p.y - 1)) {
+					maze[p.x][p.y] = 'X';
+					Path next = new Path(p.x, p.y - 1, p);
+					queue.add(next);
+				}
 			}
 		}
+		return results;
+
+	}
+
+	public static Path getPathBFS(int x, int y) {
+		queue.add(new Path(x, y, null));
+		int fiftyCount = 0;
+		while (!queue.isEmpty()) {
+			System.out.println("queue depth " + queue.size());
+			Path p = queue.remove();
+			// if ((p.x == DEST_X) && (p.y == DEST_Y)) {
+			// System.out.println("Reached end");
+			// return p;
+			// }
+			if (p.distance == 50)
+				fiftyCount++;
+			else {
+				if (isFree(p.x + 1, p.y)) {
+					maze[p.x][p.y] = 'X';
+					Path next = new Path(p.x + 1, p.y, p);
+					queue.add(next);
+				}
+				if (isFree(p.x - 1, p.y)) {
+					maze[p.x][p.y] = 'X';
+					Path next = new Path(p.x - 1, p.y, p);
+					queue.add(next);
+				}
+
+				if (isFree(p.x, p.y + 1)) {
+					maze[p.x][p.y] = 'X';
+					Path next = new Path(p.x, p.y + 1, p);
+					queue.add(next);
+				}
+
+				if (isFree(p.x, p.y - 1)) {
+					maze[p.x][p.y] = 'X';
+					Path next = new Path(p.x, p.y - 1, p);
+					queue.add(next);
+				}
+			}
+		}
+		System.out.println("Fifty count " + fiftyCount);
 		return null;
 
 	}
@@ -92,8 +138,8 @@ public class Maze {
 			}
 		}
 		// Calculate shortest path
-		Path p = getPathBFS(0, 0);
-		
+		// Path p = getPathBFS(0, 0);
+
 		// Reset the maze -- probably shoudl refactor this
 		for (int y = 0; y < maze.length; y++) {
 			for (int x = 0; x < maze[y].length; x++) {
@@ -103,24 +149,32 @@ public class Maze {
 					maze[x][y] = '.';
 			}
 		}
-		
-		// Update maze with path
+
+		List<Path> paths = getDistanceBFS(0, 0);
 		int count = 0;
-		while (p.getParent() != null) {
-			count++;
-			maze[p.x][p.y] = 'X';
-			p = p.getParent();
-		}
-		// Print path
+
 		for (int y = 0; y < maze.length; y++) {
 			for (int x = 0; x < maze[y].length; x++) {
+				if (maze[x][y] == 'X') count++;
 				System.out.print(maze[x][y]);
 			}
 			System.out.println("");
 		}
-		// -2 removes start end end location to calculate steps
-		count -=2;
-		System.out.println("Count " + count);
+		for (Path p : paths) {
+			while (p.getParent() != null) {
+				maze[p.x][p.y] = 'X';
+				p = p.getParent();
+			}
+		}
+		// Print path
+//		for (int y = 0; y < maze.length; y++) {
+//			for (int x = 0; x < maze[y].length; x++) {
+//				if (maze[x][y] == 'X') count++;
+//				System.out.print(maze[x][y]);
+//			}
+//			System.out.println("");
+//		}
+		System.out.println("count " + count);
 	}
 
 }
