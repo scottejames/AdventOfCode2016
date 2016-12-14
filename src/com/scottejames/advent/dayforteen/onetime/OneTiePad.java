@@ -12,9 +12,10 @@ public class OneTiePad {
 
 	public static void main(String[] args) throws NoSuchAlgorithmException {
 
+		
 		List<Integer> keys = new ArrayList<>();
 		int count = 0;
-		ListOfHashes list = new ListOfHashes();
+		ListOfHashes list = new ListOfHashes(2017);
 		while (keys.size() < 64) {
 			String threeMatch = list.matchForThree(count);
 			if (threeMatch != null)

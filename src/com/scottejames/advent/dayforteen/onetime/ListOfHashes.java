@@ -13,13 +13,14 @@ public class ListOfHashes {
 	private Pattern threePattern = null;
 	private Pattern fivePattern = null;
 	private Map<Integer, String> cache = new HashMap<Integer, String>();
+
 	private Map<Integer, String> threeCache = new HashMap<Integer, String>();
 	private Map<Integer, String> fiveCache = new HashMap<Integer, String>();
-
-	public ListOfHashes() {
+	private int stretch = 1;
+	public ListOfHashes(int _stretch) {
 		threePattern = Pattern.compile(threePatternText);
 		fivePattern = Pattern.compile(fivePatternText);
-
+		stretch = _stretch;
 	}
 
 	// Note going to have some duplicated work here if three is not a match...
@@ -70,13 +71,16 @@ public class ListOfHashes {
 		try {
 			java.security.MessageDigest md;
 			md = java.security.MessageDigest.getInstance("MD5");
-			byte[] array = md.digest(test.getBytes());
-			StringBuffer sb = new StringBuffer();
+			for (int j = 0; j < stretch; j++) {
+				byte[] array = md.digest(test.getBytes());
+				StringBuffer sb = new StringBuffer();
 
-			for (int i = 0; i < array.length; ++i) {
-				sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1, 3));
+				for (int i = 0; i < array.length; ++i) {
+					sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1, 3));
+				}
+				test = sb.toString();
 			}
-			result = sb.toString();
+			result = test;
 
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
